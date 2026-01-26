@@ -13,6 +13,11 @@ uv add django djangorestframework
 django-admin startproject myproject
 python manage.py startapp api
 
+Не называть app именем app!
+
+делать runserver из внутренней папки
+
+
 INSTALLED_APPS = [
     # ... default django apps ...
     'rest_framework',  # Add Django Rest Framework

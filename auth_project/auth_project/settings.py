@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",  # Add Django Rest Framework
-    "api",  # Add app
+    "api.apps.ApiConfig",  # Add app
+    # 'api'
 ]
 
 MIDDLEWARE = [
@@ -61,7 +62,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
 }
 
-ROOT_URLCONF = "drf_example.urls"
+ROOT_URLCONF = "auth_project.urls"
 
 TEMPLATES = [
     {
@@ -78,7 +79,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "drf_example.wsgi.application"
+WSGI_APPLICATION = "auth_project.wsgi.application"
 
 
 # Database

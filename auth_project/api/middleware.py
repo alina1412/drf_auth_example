@@ -1,7 +1,7 @@
 from urllib import request
 from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 
-from drf_example.settings import logger
+from auth_project.settings import logger
 
 
 class AsyncMiddleware0:
