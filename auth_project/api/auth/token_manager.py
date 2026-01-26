@@ -3,10 +3,9 @@ import datetime
 import pytz
 from jose import JWTError, jwt
 
-
-from auth_project.api.auth.fake_db import get_user
-from auth_project.api.auth.headers import CredentialsException
-from auth_project.api.auth.schemas import TokenCheckedDataDto, TokenDataDto
+from api.auth.fake_db import get_user
+from api.auth.headers import CredentialsException
+from api.auth.schemas import TokenCheckedDataDto, TokenDataDto
 
 SECRET = "your_secret_key_here"
 

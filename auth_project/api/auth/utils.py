@@ -1,7 +1,6 @@
-from fastapi import Depends, Request
 from passlib.context import CryptContext
 
-from drf_main.settings import logger
+from auth_project.settings import logger
 
 # from service.exceptions import CredentialsException
 from .headers import validate_bearer_type
@@ -30,9 +29,16 @@ def verify_user(user: dict, password: str) -> bool:
 
 
 async def get_user_token_data(
-    request: Request, _=Depends(validate_bearer_type)
+    request,  # =(validate_bearer_type)
 ) -> TokenDataDto:
-    token = request.headers.get("client_secret")
+    token = ""
+    auth_header1 = request.headers.get("Authorization")
+    logger.debug(f"auth_header1: {auth_header1}")
+
+    token = request.headers.get("X-Client-Secret")
+    logger.debug(f"found client_secret in header with key: {token}")
+
+    logger.debug(f"token from header: {token}")
     if token is None:
         logger.info("no 'client_secret' in a header")
         raise CredentialsException(detail="no 'client_secret' in a header")

@@ -28,7 +28,7 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",  # Add Django Rest Framework
+    "drf_yasg",
     "api.apps.ApiConfig",  # Add app
     # 'api'
 ]
@@ -137,3 +138,40 @@ logging.basicConfig(
     datefmt="%H:%M:%S",  # datefmt='%Y-%m-%d %H:%M:%S',
 )
 logger = logging.getLogger(__name__)
+
+
+SWAGGER_SETTINGS = {
+    "SECURITY_DEFINITIONS": {
+        "apiKey": {
+            "type": "apiKey",
+            "name": "X-Client-Secret",
+            "in": "header",
+            "scheme": "apiKey",
+        },
+        # "bearerAuth": {
+        #     "type": "http",
+        #     "scheme": "bearer",
+        #     "bearerFormat": "JWT",
+        # },
+    },
+    "SECURITY": [
+        {"bearerAuth": ["read", "write"], "apiKey": ["read", "write"]}
+    ],
+    # "SUPPORTED_SUBMIT_METHODS": ["get", "post", "put", "delete", "patch"],
+    "REFETCH_SCHEMA_ON_LOGOUT": True,
+    "USE_SESSION_AUTH": False,
+    # 'DEFAULT_FIELD_INSPECTORS': [
+    #     'drf_yasg.inspectors.CamelCaseJSONFilter',
+    #     'drf_yasg.inspectors.ReferencingSerializerInspector',
+    #     'drf_yasg.inspectors.RelatedFieldInspector',
+    #     'drf_yasg.inspectors.ChoiceFieldInspector',
+    #     'drf_yasg.inspectors.FileFieldInspector',
+    #     'drf_yasg.inspectors.DictFieldInspector',
+    #     'drf_yasg.inspectors.JSONFieldInspector',
+    #     'drf_yasg.inspectors.SerializerMethodFieldInspector',
+    #     'drf_yasg.inspectors.SimpleFieldInspector',
+    # ],
+    # 'DEFAULT_FILTER_INSPECTORS': [
+    #     'drf_yasg.inspectors.CoreAPICompatInspector',
+    # ],
+}
