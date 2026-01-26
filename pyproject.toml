@@ -1,0 +1,33 @@
+[project]
+name = "drf-example"
+version = "0.1.0"
+description = "django example"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=6.0.1",
+    "djangorestframework>=3.16.1",
+    "pytest-django>=4.11.1",
+]
+
+[dependency-groups]
+dev = ["ruff"]
+
+
+[tool.ruff]
+line-length = 79
+indent-width = 4
+exclude = [
+    "alembic",
+    "migration",
+    "migrations"
+]
+
+
+[tool.ruff.lint]
+# Extend the default rule selection to include import sorting (I rules)
+extend-select = ["I"]
+fixable = ["I"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 79
