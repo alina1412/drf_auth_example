@@ -17,3 +17,24 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Role(models.Model):
+    name = models.CharField(max_length=20, unique=True)
+    description = models.TextField(blank=True)
+
+
+class User(models.Model):
+    username = models.CharField(max_length=50, unique=True)
+    password = models.CharField(max_length=250)
+    created_at = models.DateTimeField(auto_now_add=True)
+    role = models.ForeignKey(
+        Role,
+        on_delete=models.SET_NULL,
+        # related_name='users'
+        null=True,
+    )
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "user"
