@@ -38,3 +38,4 @@ class User(models.Model):
 
     class Meta:
         db_table = "user"
+        verbose_name = "Api_User"

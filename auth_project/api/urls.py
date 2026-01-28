@@ -4,7 +4,12 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 
-from .views import BookAuthorViewSet, BookViewSet, TokenGenView
+from .views import (
+    BookAuthorViewSet,
+    BookViewSet,
+    RegistrationView,
+    TokenGenView,
+)
 
 router = DefaultRouter()
 router.register("books", BookViewSet, basename="book")
@@ -29,4 +34,5 @@ urlpatterns = router.urls + [
         name="schema-swagger-ui",
     ),
     path("token/gen", TokenGenView.as_view(), name="token-gen"),
+    path("register", RegistrationView.as_view(), name="register"),
 ]
