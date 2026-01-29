@@ -4,8 +4,8 @@ import pytz
 from auth_project.settings import logger
 from jose import JWTError, jwt
 
+from api.auth.db import UserAccessDb
 from api.auth.exceptions import CredentialsException
-from api.auth.fake_db import get_user
 from api.auth.schemas import TokenCheckedDataDto, TokenDataDto, UserDataDto
 
 SECRET = "your_secret_key_here"
@@ -53,9 +53,10 @@ class TokenManager:
 
         return TokenDataDto(**data)
 
-    def validate_token(self, user: dict, expired_time: str) -> None:
+    def validate_token(self, user: UserDataDto, expired_time: str) -> None:
         if (
             not user
+            or not user.is_active
             or expired_time is None
             or datetime.datetime.fromisoformat(expired_time)
             < datetime.datetime.now(tz=pytz.utc)
@@ -64,7 +65,7 @@ class TokenManager:
 
     def check_token(self, token: str, request) -> TokenCheckedDataDto:
         decoded_token_data = self.decode_token(token)
-        user = get_user(decoded_token_data.username)
+        user = UserAccessDb().get_user(decoded_token_data.username)
         expired_time = decoded_token_data.expire
         self.validate_token(user, expired_time)
         request.user_data = user

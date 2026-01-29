@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Author, Book
+from .models import Author, Book, User
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -29,3 +29,9 @@ class BookAuthorSerializer(serializers.ModelSerializer):
         book = Book.objects.create(author=author, **validated_data)
 
         return book
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"

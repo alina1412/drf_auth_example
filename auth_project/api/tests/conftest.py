@@ -6,6 +6,7 @@ from rest_framework.test import APIClient
 from api.auth.token_manager import TokenManager
 
 
+@pytest.fixture
 def example_basic_role_user() -> dict[str, str]:
     return {
         "username": "joe",
@@ -15,10 +16,10 @@ def example_basic_role_user() -> dict[str, str]:
 
 
 @pytest.fixture
-def auth_token() -> str:
+def auth_token(example_basic_role_user) -> str:
     """Fixture to get authentication token for BASIC role user"""
     api_client = APIClient()
-    correct_user = example_basic_role_user()
+    correct_user = example_basic_role_user
 
     username = correct_user["username"]
     password = correct_user["password"]

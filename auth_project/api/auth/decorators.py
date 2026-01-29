@@ -8,7 +8,7 @@ from api.auth.exceptions import (
     CredentialsExceptionResponse,
 )
 from api.auth.schemas import UserRole
-from api.auth.utils import UserAuthorization
+from api.auth.user_auth import UserAuthorization
 
 
 def auth_by_creds():
@@ -17,7 +17,7 @@ def auth_by_creds():
             logger.debug("Decorator auth_by_creds applied")
 
             try:
-                UserAuthorization.auth_user(request)
+                UserAuthorization().auth_user(request)
             except CredentialsException401:
                 return CredentialsExceptionResponse().response_401()
             except CredentialsException422:
@@ -41,7 +41,7 @@ def require_auth_role(reqired_role):
 
             if token:
                 try:
-                    UserAuthorization.auth_user_by_token(request, token)
+                    UserAuthorization().auth_user_by_token(request, token)
                     verified_token = True
                 except CredentialsException as exc:
                     logger.debug(f"User is not verified {exc}")

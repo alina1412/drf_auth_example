@@ -8,6 +8,7 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.auth.db import UserAccessDb
 from api.auth.decorators import (
     auth_by_creds,
     require_auth_role,
@@ -15,10 +16,9 @@ from api.auth.decorators import (
 from api.auth.schemas import UserDataDto, UserRole
 from api.auth.serializers import LoginSerializer
 from api.auth.token_manager import TokenManager
-from api.auth.utils import UserAccessDb, UserAuthorization
 
 from .models import Book, Role, User
-from .serializers import BookAuthorSerializer, BookSerializer
+from .serializers import BookAuthorSerializer, BookSerializer, UserSerializer
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -114,3 +114,58 @@ class RegistrationView(APIView):
             {"message": "User registered successfully"},
             status=status.HTTP_201_CREATED,
         )
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """Shows users"""
+
+    serializer_class = UserSerializer
+    queryset = User.objects.all().order_by("id")
+    lookup_field = "pk"
+
+    def get_queryset(self):
+        return self.queryset
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        return get_object_or_404(self.get_queryset(), pk=pk)
+
+    @require_auth_role(UserRole.BASIC)
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    # GET
+    @require_auth_role(UserRole.BASIC)
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    # POST
+    @require_auth_role(UserRole.BASIC)
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @require_auth_role(UserRole.BASIC)
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    # PATCH partial update
+    @require_auth_role(UserRole.BASIC)
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    # DELETE -> set is_active=False
+    @require_auth_role(UserRole.BASIC)
+    def destroy(self, request, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        user = get_object_or_404(self.get_queryset(), pk=pk)
+        if not request.user_data.username == user.username:
+            return Response(
+                {"error": "Incorrect request."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        user.is_active = False
+        user.save()
+        request.user_data.role = UserRole.GUEST
+        request.user_data.username = "guest"
+        request.user_data.is_active = False
+        return Response(status=status.HTTP_200_OK)

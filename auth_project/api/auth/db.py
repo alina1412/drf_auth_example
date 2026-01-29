@@ -1,0 +1,26 @@
+from api.auth.schemas import UserDataDto, UserRole
+from api.models import Role, User
+
+from .utils import EncodingPassword
+
+
+class UserAccessDb:
+    def save_user(self, username: str, password: str) -> None:
+        role = Role.objects.filter(name="basic").first()
+        hashed_password = EncodingPassword.set_password(password)
+        user = User(
+            username=username,
+            password=hashed_password,
+            role=role,
+        )
+        user.save()
+
+    def get_user(self, username: str) -> UserDataDto | None:
+        user = User.objects.filter(username=username).first()
+        if not user:
+            return None
+
+        role = UserRole.GUEST.value if not user.role else user.role.name
+        return UserDataDto(
+            user.username, user.password, UserRole(role), user.is_active
+        )

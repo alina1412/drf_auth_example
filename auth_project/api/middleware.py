@@ -6,7 +6,7 @@ from api.auth.exceptions import (
     CredentialsExceptionResponse,
 )
 from api.auth.schemas import UserDataDto, UserRole
-from api.auth.utils import UserAuthorization
+from api.auth.user_auth import UserAuthorization
 
 from .views import RegistrationView, TokenGenView
 

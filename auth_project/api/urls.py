@@ -9,12 +9,13 @@ from .views import (
     BookViewSet,
     RegistrationView,
     TokenGenView,
+    UserViewSet,
 )
 
 router = DefaultRouter()
 router.register("books", BookViewSet, basename="book")
 router.register(r"books-author", BookAuthorViewSet, basename="bookauthor")
-
+router.register("profile", UserViewSet, basename="profile")
 
 schema_view = get_schema_view(
     openapi.Info(
