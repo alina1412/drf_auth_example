@@ -22,6 +22,12 @@ educational
 4. Каждый пользователь может "удалить" свой профиль - запись остается в базе, но -> is_active = False. После этого доступ к url по токену прекращается и новый "логин" не осуществляется.
 
 
+<img width="1619" height="843" alt="image" src="https://github.com/user-attachments/assets/ab45ebeb-7d29-434e-a189-ba20b3bc6ff5" />
+
+<img width="1619" height="920" alt="image" src="https://github.com/user-attachments/assets/d66854ab-2860-4191-8de0-f8c455d5e769" />
+
+
+
 ## Notes
 ```
 uv venv
@@ -97,7 +103,7 @@ curl -X 'POST' \
   "password": "123"
 }'
 
-```
+
 
 curl -X 'POST' \
   'http://127.0.0.1:8000/api/edit-role' \
@@ -133,3 +139,5 @@ curl -X 'DELETE' \
   "role_id": 5,
   "id": 1
 }'
+
+```
