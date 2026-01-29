@@ -7,17 +7,17 @@ class CredentialsException(Exception):
 
 
 class CredentialsException401(Exception):
-    def __init__(self, detail: str):
+    def __init__(self, detail: str | None = None):
         self.detail = detail
 
 
 class CredentialsException403(Exception):
-    def __init__(self, detail: str):
+    def __init__(self, detail: str | None = None):
         self.detail = detail
 
 
 class CredentialsException422(Exception):
-    def __init__(self, detail: str):
+    def __init__(self, detail: str | None = None):
         self.detail = detail
 
 

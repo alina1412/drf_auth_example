@@ -9,6 +9,7 @@ from .views import (
     BookViewSet,
     RegistrationView,
     TokenGenView,
+    UsersRoleEditView,
     UserViewSet,
 )
 
@@ -16,6 +17,7 @@ router = DefaultRouter()
 router.register("books", BookViewSet, basename="book")
 router.register(r"books-author", BookAuthorViewSet, basename="bookauthor")
 router.register("profile", UserViewSet, basename="profile")
+
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -36,4 +38,5 @@ urlpatterns = router.urls + [
     ),
     path("token/gen", TokenGenView.as_view(), name="token-gen"),
     path("register", RegistrationView.as_view(), name="register"),
+    path("edit-role", UsersRoleEditView.as_view(), name="edit-role"),
 ]

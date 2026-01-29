@@ -65,7 +65,9 @@ class TokenManager:
 
     def check_token(self, token: str, request) -> TokenCheckedDataDto:
         decoded_token_data = self.decode_token(token)
-        user = UserAccessDb().get_user(decoded_token_data.username)
+        user = UserAccessDb().get_user(
+            {"username": decoded_token_data.username}
+        )
         expired_time = decoded_token_data.expire
         self.validate_token(user, expired_time)
         request.user_data = user

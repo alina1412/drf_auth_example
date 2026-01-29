@@ -1,6 +1,28 @@
-Example of a django rest framework project
+### Example of a django rest framework project
+
 educational
 
+Пример учебного проекта, REST API
+
+1. API имеют ограничение доступа. 
+
+Каждый пользователь может быть одной из ролей: admin, manager, basic, guest (последний - не требует авторизации, но имеет меньше всего доступа).
+
+Реализация доступа с помощью декоратора над каждым из методов.
+
+пример
+
+`@require_auth_role(UserRole.BASIC)`
+
+Либо у UserRole можно указать не BASIC, а любой из остальных.
+У Админа - права на всё.
+
+2. Есть url регистрации по уникальному юзернейму и паролю
+3. Авторизация через юзернейм и пароль - равна запросу на выдачу jwt токена, который действует ограниченное время, и по которому есть доступ к другим url.
+4. Каждый пользователь может "удалить" свой профиль - запись остается в базе, но -> is_active = False. После этого доступ к url по токену прекращается и новый "логин" не осуществляется.
+
+
+## Notes
 ```
 uv venv
 source .venv/bin/activate
@@ -76,3 +98,38 @@ curl -X 'POST' \
 }'
 
 ```
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/api/edit-role' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '' -H 'Authorization:bearer xxx' \
+  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjlUMTM6MTY6MzIuNDg0NTkzKzAwOjAwIiwicm9sZSI6ImFkbWluIn0.6cUZ-0fURrf2mYRORxVHjmvmFHme9pWcjchZyEL6IaM' \
+  -d '{
+  "role_id": 5,
+  "id": 1
+}'
+
+
+curl -X 'POST' \
+  'http://127.0.0.1:8000/api/edit-role' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '' -H 'Authorization:bearer xxx' \
+  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjlUMTM6MTY6MzIuNDg0NTkzKzAwOjAwIiwicm9sZSI6ImFkbWluIn0.6cUZ-0fURrf2mYRORxVHjmvmFHme9pWcjchZyEL6IaM' \
+  -d '{
+  "role_id": 5,
+  "id": 1
+}'
+
+
+curl -X 'DELETE' \
+  'http://127.0.0.1:8000/api/profile/1/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '' -H 'Authorization:bearer xxx' \
+  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjlUMTM6MTY6MzIuNDg0NTkzKzAwOjAwIiwicm9sZSI6ImFkbWluIn0.6cUZ-0fURrf2mYRORxVHjmvmFHme9pWcjchZyEL6IaM' \
+  -d '{
+  "role_id": 5,
+  "id": 1
+}'

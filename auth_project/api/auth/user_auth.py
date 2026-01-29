@@ -50,14 +50,14 @@ class UserAuthorization:
             assert "username" in body and "password" in body
         except (json.JSONDecodeError, AssertionError):
             logger.info("Invalid JSON in request body")
-            return CredentialsException422
+            raise CredentialsException422()
 
         guest_user = self.unverified_user(body)
-        user = UserAccessDb().get_user(guest_user.username)
+        user = UserAccessDb().get_user({"username": guest_user.username})
 
         if not self.verify_user(user, guest_user.password):
             logger.info("User is not verified")
-            return CredentialsException401
+            raise CredentialsException401()
 
         request.user_data = user
 

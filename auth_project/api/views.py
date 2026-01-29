@@ -8,16 +8,20 @@ from rest_framework import status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.auth.db import UserAccessDb
+from api.auth.db import RoleAccessDb, UserAccessDb
 from api.auth.decorators import (
     auth_by_creds,
     require_auth_role,
 )
+from api.auth.exceptions import (
+    CredentialsException403,
+    CredentialsExceptionResponse,
+)
 from api.auth.schemas import UserDataDto, UserRole
-from api.auth.serializers import LoginSerializer
+from api.auth.serializers import LoginSerializer, UserRoleEditSerializer
 from api.auth.token_manager import TokenManager
 
-from .models import Book, Role, User
+from .models import Book, User
 from .serializers import BookAuthorSerializer, BookSerializer, UserSerializer
 
 
@@ -117,7 +121,7 @@ class RegistrationView(APIView):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """Shows users"""
+    """Shows users (profile or list of them)"""
 
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by("id")
@@ -135,30 +139,61 @@ class UserViewSet(viewsets.ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     # GET
-    @require_auth_role(UserRole.BASIC)
+    @require_auth_role(UserRole.ADMIN)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
     # POST
-    @require_auth_role(UserRole.BASIC)
+    @require_auth_role(UserRole.ADMIN)
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
     @require_auth_role(UserRole.BASIC)
     def update(self, request, *args, **kwargs):
+        if request.user_data.role != UserRole.ADMIN:
+            try:
+                user = self.get_own_profile_or_403(request)
+                if "role" in request.data:
+                    del request.data["role"]
+
+            except CredentialsException403:
+                return Response(
+                    {"error": "Incorrect request."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
         return super().update(request, *args, **kwargs)
 
     # PATCH partial update
     @require_auth_role(UserRole.BASIC)
     def partial_update(self, request, *args, **kwargs):
+        if request.user_data.role != UserRole.ADMIN:
+            try:
+                user = self.get_own_profile_or_403(request)
+                if "role" in request.data:
+                    del request.data["role"]
+            except CredentialsException403:
+                return Response(
+                    {"error": "Incorrect request."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
         return super().partial_update(request, *args, **kwargs)
+
+    def get_own_profile_or_403(self, request) -> User:
+        pk = self.kwargs["pk"]
+        user = get_object_or_404(self.get_queryset(), pk=pk)
+
+        if not request.user_data.username == user.username:
+            raise CredentialsException403()
+
+        return user
 
     # DELETE -> set is_active=False
     @require_auth_role(UserRole.BASIC)
     def destroy(self, request, *args, **kwargs):
-        pk = self.kwargs["pk"]
-        user = get_object_or_404(self.get_queryset(), pk=pk)
-        if not request.user_data.username == user.username:
+        try:
+            user = self.get_own_profile_or_403(request)
+        except CredentialsException403:
             return Response(
                 {"error": "Incorrect request."},
                 status=status.HTTP_403_FORBIDDEN,
@@ -169,3 +204,38 @@ class UserViewSet(viewsets.ModelViewSet):
         request.user_data.username = "guest"
         request.user_data.is_active = False
         return Response(status=status.HTTP_200_OK)
+
+
+class UsersRoleEditView(APIView):
+    @swagger_auto_schema(
+        request_body=UserRoleEditSerializer,
+    )
+    @require_auth_role(UserRole.ADMIN)
+    def post(self, request):
+        user_id = request.data.get("id")
+        role_id = request.data.get("role_id")
+        if not (isinstance(user_id, int) and isinstance(role_id, int)):
+            return CredentialsExceptionResponse().response_422()
+
+        try:
+            user = User.objects.filter(id=user_id).first()
+            if not user:
+                return Response(
+                    {"error": "User edit failed - user NOT_FOUND"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+            role = RoleAccessDb().get_role({"id": role_id})
+            user.role = role
+            user.save()
+        except Exception as e:
+            logger.error(f"User edit failed: {e}")
+            return Response(
+                {"error": "User edit failed", "details": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return Response(
+            {"message": "success"},
+            status=status.HTTP_200_OK,
+        )

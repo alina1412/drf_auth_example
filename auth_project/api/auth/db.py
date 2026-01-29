@@ -15,8 +15,8 @@ class UserAccessDb:
         )
         user.save()
 
-    def get_user(self, username: str) -> UserDataDto | None:
-        user = User.objects.filter(username=username).first()
+    def get_user(self, user_data: dict) -> UserDataDto | None:
+        user = User.objects.filter(**user_data).first()
         if not user:
             return None
 
@@ -24,3 +24,8 @@ class UserAccessDb:
         return UserDataDto(
             user.username, user.password, UserRole(role), user.is_active
         )
+
+
+class RoleAccessDb:
+    def get_role(self, role_data) -> Role | None:
+        return Role.objects.filter(**role_data).first()
