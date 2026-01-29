@@ -1,12 +1,17 @@
 import json
 
 import bcrypt
+from auth_project.settings import logger
 
 from api.auth.fake_db import fake_db, get_user
 from api.models import Role, User
-from auth_project.settings import logger
 
-from .exceptions import CredentialsException, CredentialsExceptionResponse
+from .exceptions import (
+    CredentialsException,
+    CredentialsException401,
+    CredentialsException422,
+    CredentialsExceptionResponse,
+)
 from .schemas import TokenDataDto, UserDataDto, UserRole
 from .token_manager import TokenManager
 
@@ -50,7 +55,7 @@ class UserAuthorization:
         return user_data
 
     @staticmethod
-    def auth_user(request) -> UserDataDto | None:
+    def auth_user(request) -> None:
         """Если пользователь не верифицирован,
         ошибка 401"""
         try:
@@ -58,19 +63,19 @@ class UserAuthorization:
             assert "username" in body and "password" in body
         except (json.JSONDecodeError, AssertionError):
             logger.info("Invalid JSON in request body")
-            return CredentialsExceptionResponse().response_422()
+            return CredentialsException422
 
         guest_user = UserAuthorization.unverified_user(body)
         user = get_user(guest_user.username)
 
         if not UserAuthorization.verify_user(user, guest_user.password):
             logger.info("User is not verified")
-            return CredentialsExceptionResponse().response_401()
+            return CredentialsException401
 
         request.user_data = user
 
     @staticmethod
-    async def auth_user_by_token(request, token: str) -> TokenDataDto:
+    def auth_user_by_token(request, token: str) -> None:
         try:
             UserAuthorization.validate_bearer_type(request)
             token_info = TokenManager().check_token(token, request)
@@ -83,7 +88,7 @@ class UserAuthorization:
         request.user_data.role = UserRole(token_info.claims.role)
 
     @staticmethod
-    async def validate_bearer_type(request) -> None:
+    def validate_bearer_type(request) -> None:
         token_type = request.headers.get("Authorization")
         logger.debug(f"auth_header1 token_type: {token_type}")
         if not token_type:

@@ -1,12 +1,12 @@
 import datetime
 
 import pytz
+from auth_project.settings import logger
 from jose import JWTError, jwt
 
 from api.auth.exceptions import CredentialsException
 from api.auth.fake_db import get_user
 from api.auth.schemas import TokenCheckedDataDto, TokenDataDto, UserDataDto
-from auth_project.settings import logger
 
 SECRET = "your_secret_key_here"
 
