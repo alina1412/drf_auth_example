@@ -59,7 +59,13 @@ python manage.py makemigrations
 python manage.py migrate
 
 python manage.py migrate api zero # reverse
-``
+```
+
+```
+Get username and password from query parameters:
+username = request.query_params.get('username')
+password = request.query_params.get('password')
+```
 
 
 ```
@@ -69,6 +75,7 @@ curl -X 'GET' \
   'http://0.0.0.0:8000/api/books-author/' \
   -H 'accept: application/json' \
   -d '' -H 'Authorization:bearer xxx' 
+
 
 curl -X 'POST' \
   'http://0.0.0.0:8000/api/books-author/' \
@@ -83,14 +90,6 @@ curl -X 'POST' \
   "publish_date": "2026-01-30"
 }'
   
-  
-  
-  '{
-  "author": "joe",
-  "title": "123",
-  "publish_date": "2026-01-30"
-  
-}'
 
 curl -X 'POST' \
   'http://127.0.0.1:8000/api/token/gen' \
@@ -103,9 +102,7 @@ curl -X 'POST' \
 }'
 
 curl -X 'POST' 'http://0.0.0.0:8000/v1/?username=joe&password=123'
-# Get username and password from query parameters
-# username = request.query_params.get('username')
-# password = request.query_params.get('password')
+
 
 get username and password from body in view
 username = request.data.get("username")
