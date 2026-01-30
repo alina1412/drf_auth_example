@@ -16,6 +16,8 @@ from .utils import EncodingPassword
 
 
 class UserAuthorization:
+    token = None
+
     @staticmethod
     def process_access(role: UserRole, require_role: UserRole) -> bool:
         if not UserRole.has_permission(role, require_role):
@@ -61,10 +63,9 @@ class UserAuthorization:
 
         request.user_data = user
 
-    def auth_user_by_token(self, request, token: str) -> None:
+    def auth_user_by_token(self, request) -> None:
         try:
-            self.validate_bearer_type(request)
-            token_info = TokenManager().check_token(token, request)
+            token_info = TokenManager().check_token(self.token, request)
         except CredentialsException as exc:
             logger.debug(f"Token validation error: {exc.detail}")
             raise CredentialsException(
@@ -73,13 +74,17 @@ class UserAuthorization:
         request.user_data.username = token_info.claims.username
         request.user_data.role = UserRole(token_info.claims.role)
 
-    @staticmethod
-    def validate_bearer_type(request) -> None:
+    def validate_bearer_type(self, request) -> bool:
         token_type = request.headers.get("Authorization")
         logger.debug(f"auth_header1 token_type: {token_type}")
         if not token_type:
             logger.info("no 'Authorization' in a header")
+            return False
 
-        if not token_type or token_type.split()[0].lower() != "bearer":
-            logger.warning("CredentialsException")
-            raise CredentialsException(detail="not type 'bearer' in a header")
+        splitted = token_type.split()
+        if len(splitted) < 2 or splitted[0].lower() != "bearer":
+            logger.debug("not type 'bearer' in a header")
+            return False
+
+        self.token = splitted[1]
+        return True

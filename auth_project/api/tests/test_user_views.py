@@ -87,8 +87,7 @@ def test_get_user_view_unauthorized():
     url = reverse("profile-detail", args=[1])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
+        "Authorization": "",
     }
     client = APIClient()
     resp = client.get(url, headers=headers)
@@ -103,8 +102,7 @@ def test_delete_own_profile_view_success(auth_token, example_basic_role_user):
     url = reverse("profile-detail", args=[profile.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
@@ -117,8 +115,7 @@ def test_delete_own_profile_view_success(auth_token, example_basic_role_user):
     url = reverse("profile-detail", args=[profile.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
@@ -151,8 +148,7 @@ def test_delete_other_user_view_forbidden(auth_token):
     url = reverse("profile-detail", args=[new_user.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
     client = APIClient()
     resp = client.delete(url, headers=headers)
@@ -169,8 +165,7 @@ def test_update_other_user_view_forbidden(auth_token):
     url = reverse("profile-detail", args=[new_user.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
     client = APIClient()
     resp = client.put(
@@ -197,8 +192,7 @@ def test_update_other_user_view_success(admin_auth_token):
     url = reverse("profile-detail", args=[new_user.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": admin_auth_token,
+        "Authorization": f"bearer {admin_auth_token}",
     }
     client = APIClient()
     resp = client.put(
@@ -223,8 +217,7 @@ def test_update_own_user_view_success(auth_token, example_basic_role_user):
     url = reverse("profile-detail", args=[user.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
     client = APIClient()
     resp = client.put(
@@ -252,8 +245,7 @@ def test_update_own_user_view_except_for_role(
     url = reverse("profile-detail", args=[user.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
     client = APIClient()
     resp = client.put(
@@ -280,7 +272,6 @@ def test_user_edit_role_view_unauthorized():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
     resp = client.post(
@@ -296,8 +287,7 @@ def test_user_edit_role_view_success(admin_auth_token):
 
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": admin_auth_token,
+        "Authorization": f"bearer {admin_auth_token}",
     }
     client = APIClient()
     resp = client.post(
@@ -312,8 +302,7 @@ def test_user_edit_role_view_user_not_found(admin_auth_token):
     url = reverse("edit-role")
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": admin_auth_token,
+        "Authorization": f"bearer {admin_auth_token}",
     }
     client = APIClient()
     last_id = User.objects.last().id
@@ -332,8 +321,7 @@ def test_user_edit_role_view_invalid_data_types(admin_auth_token):
     url = reverse("edit-role")
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": admin_auth_token,
+        "Authorization": f"bearer {admin_auth_token}",
     }
     client = APIClient()
     resp = client.post(
@@ -351,7 +339,6 @@ def test_profile_list_view_forbidden():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
 
@@ -367,8 +354,7 @@ def test_profile_list_view_sussess(admin_auth_token):
     url = "/api/profile/"
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": admin_auth_token,
+        "Authorization": f"bearer {admin_auth_token}",
     }
     client = APIClient()
 
@@ -386,8 +372,7 @@ def test_profile_add_view_success(admin_auth_token):
     url = "/api/profile/"
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": admin_auth_token,
+        "Authorization": f"bearer {admin_auth_token}",
     }
     client = APIClient()
 

@@ -68,15 +68,29 @@ example of a request
 curl -X 'GET' \
   'http://0.0.0.0:8000/api/books-author/' \
   -H 'accept: application/json' \
-  -d '' -H 'Authorization:bearer xxx' \
-  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjhUMDY6NTk6MzQuMTUyNzM1KzAwOjAwIiwicm9sZSI6ImJhc2ljIn0.VIBOe74-rq56_aflBrTWnC4sJufcTAE0iTAG1ofNAT8'
-
+  -d '' -H 'Authorization:bearer xxx' 
 
 curl -X 'POST' \
-  'http://0.0.0.0:8000/api/token/check?username=joe&password=123' \
+  'http://0.0.0.0:8000/api/books-author/' \
   -H 'accept: application/json' \
   -d '' -H 'Authorization:bearer xxx' \
-  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjdUMTU6MzA6MzMuNjQxODk0KzAwOjAwIn0.LZKUJAXvbJBmV6lwxDCRjLLsc8nZea9Aa5Xxylmyfkg'
+  -d '
+  {
+  "author": {
+    "name": "string"
+  },
+  "title": "string",
+  "publish_date": "2026-01-30"
+}'
+  
+  
+  
+  '{
+  "author": "joe",
+  "title": "123",
+  "publish_date": "2026-01-30"
+  
+}'
 
 curl -X 'POST' \
   'http://127.0.0.1:8000/api/token/gen' \
@@ -104,6 +118,7 @@ curl -X 'POST' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -H 'X-CSRFTOKEN: 86ChJcJ8ywmz6fKsWNhUFQNssTok7P5Y' \
+  -H 'X-Client-Secret:xxx' \
   -d '{
   "username": "joe",
   "password": "123"
@@ -115,8 +130,7 @@ curl -X 'POST' \
   'http://127.0.0.1:8000/api/edit-role' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
-  -d '' -H 'Authorization:bearer xxx' \
-  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjlUMTM6MTY6MzIuNDg0NTkzKzAwOjAwIiwicm9sZSI6ImFkbWluIn0.6cUZ-0fURrf2mYRORxVHjmvmFHme9pWcjchZyEL6IaM' \
+  -d '' -H 'Authorization:bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMzBUMTM6NDI6NDcuNDA5Njk4KzAwOjAwIiwicm9sZSI6ImFkbWluIn0.XWL-iV5jUq5Or7_jy2kI2NrN7oLv5G33ay7UvheBcDU' \
   -d '{
   "role_id": 5,
   "id": 1
@@ -128,7 +142,6 @@ curl -X 'POST' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '' -H 'Authorization:bearer xxx' \
-  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjlUMTM6MTY6MzIuNDg0NTkzKzAwOjAwIiwicm9sZSI6ImFkbWluIn0.6cUZ-0fURrf2mYRORxVHjmvmFHme9pWcjchZyEL6IaM' \
   -d '{
   "role_id": 5,
   "id": 1
@@ -140,7 +153,6 @@ curl -X 'DELETE' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '' -H 'Authorization:bearer xxx' \
-  -H 'X-Client-Secret:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImpvZSIsImV4cGlyZSI6IjIwMjYtMDEtMjlUMTM6MTY6MzIuNDg0NTkzKzAwOjAwIiwicm9sZSI6ImFkbWluIn0.6cUZ-0fURrf2mYRORxVHjmvmFHme9pWcjchZyEL6IaM' \
   -d '{
   "role_id": 5,
   "id": 1

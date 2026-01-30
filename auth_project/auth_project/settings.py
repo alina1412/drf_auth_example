@@ -57,8 +57,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "api.middleware.AsyncMiddleware0",
-    "api.middleware.AsyncMiddleware1",
+    "api.middleware.GuestUserMiddleware",
 ]
 
 REST_FRAMEWORK = {
@@ -161,12 +160,6 @@ logger = logging.getLogger(__name__)
 
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
-        "apiKey": {
-            "type": "apiKey",
-            "name": "X-Client-Secret",
-            "in": "header",
-            "scheme": "apiKey",
-        },
         "Bearer": {
             "type": "apiKey",
             "name": "Authorization",
@@ -176,7 +169,6 @@ SWAGGER_SETTINGS = {
     "SECURITY": [
         {
             "bearerAuth": ["read", "write"],
-            "apiKey": ["read", "write"],
             "Bearer": [],
         }
     ],

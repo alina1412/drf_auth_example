@@ -14,8 +14,7 @@ def test_list_books_view_success(auth_token):
     url = reverse("book-list")  # URL: /api/books/
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
     client = APIClient()
 
@@ -46,8 +45,7 @@ def test_create_book_view_success(auth_token):
     url = reverse("book-list")  # URL: /api/books/
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
     decoded_token_data = TokenManager().decode_token(auth_token)
 
@@ -76,7 +74,6 @@ def test_create_book_view_failure():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
 
@@ -103,7 +100,6 @@ def test_list_books_view_unauthorized():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
     resp = client.get(url, headers=headers)
@@ -117,7 +113,6 @@ def test_get_book_view_unauthorized():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
     resp = client.get(url, headers=headers)
@@ -131,7 +126,6 @@ def test_update_book_view_unauthorized():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
     resp = client.put(url, headers=headers)
@@ -145,7 +139,6 @@ def test_partial_update_book_view_unauthorized():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
     resp = client.patch(url, headers=headers)
@@ -159,7 +152,6 @@ def test_delete_book_view_unauthorized():
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
-        "X-Client-Secret": "",
     }
     client = APIClient()
     resp = client.delete(url, headers=headers)
@@ -178,10 +170,8 @@ def test_get_book_view(auth_token):
     client = APIClient()
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
-
     resp = client.get(url, headers=headers)
 
     assert resp.status_code == 200
@@ -195,8 +185,7 @@ def test_get_book_view(auth_token):
 def test_update_book_view_success(auth_token):
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
@@ -232,8 +221,7 @@ def test_partial_update_book_view_success(auth_token):
     url = reverse("book-detail", args=[book.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
@@ -261,8 +249,7 @@ def test_delete_book_view_success(auth_token):
     url = reverse("book-detail", args=[book.id])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
@@ -277,8 +264,7 @@ def test_update_book_view_not_found(auth_token):
     url = reverse("book-detail", args=[999])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
@@ -299,8 +285,7 @@ def test_delete_book_view_not_found(auth_token):
     url = reverse("book-detail", args=[999])
     headers = {
         "accept": "application/json",
-        "Authorization": "bearer xxx",
-        "X-Client-Secret": auth_token,
+        "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()

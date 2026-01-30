@@ -35,13 +35,18 @@ def require_auth_role(reqired_role):
         def wrapped(view_, request, *args, **kwargs):
             logger.debug(f"Decorator {reqired_role} applied")
 
-            token = request.headers.get("X-Client-Secret")
+            auth_class = UserAuthorization()
+
+            if not auth_class.validate_bearer_type(request):
+                return CredentialsExceptionResponse().response_401()
+
+            token = auth_class.token
             logger.debug(f"token from header: {token}")
             verified_token = False
 
             if token:
                 try:
-                    UserAuthorization().auth_user_by_token(request, token)
+                    auth_class.auth_user_by_token(request)
                     verified_token = True
                 except CredentialsException as exc:
                     logger.debug(f"User is not verified {exc}")
@@ -49,7 +54,7 @@ def require_auth_role(reqired_role):
             if not verified_token:
                 return CredentialsExceptionResponse().response_401()
 
-            if not UserAuthorization.process_access(
+            if not auth_class.process_access(
                 request.user_data.role, reqired_role
             ):
                 return CredentialsExceptionResponse().response_403()

@@ -82,8 +82,8 @@ class BookAuthorViewSet(viewsets.ModelViewSet):
 
     # POST
     @require_auth_role(UserRole.BASIC)
-    async def create(self, request, *args, **kwargs):
-        return await super().create(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class TokenGenView(APIView):
