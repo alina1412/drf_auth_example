@@ -5,13 +5,11 @@ from .utils import EncodingPassword
 
 
 class UserAccessDb:
-    def save_user(self, username: str, password: str) -> None:
+    def save_user(self, username: str, password: str, email: str) -> None:
         role = Role.objects.filter(name="basic").first()
         hashed_password = EncodingPassword.set_password(password)
         user = User(
-            username=username,
-            password=hashed_password,
-            role=role,
+            username=username, password=hashed_password, role=role, email=email
         )
         user.save()
 
