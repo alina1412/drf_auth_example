@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 import logging
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-mqaq8^)_t&-ve#kw_co3=#zqn^)oubs2h!6jx=mdlq+=mfwt6w"
-)
+load_dotenv()
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = os.environ.get("SECRET_KEY")
+DEBUG = bool(os.environ.get("DEBUG", 0))
+ISPOSTGRES = bool(os.environ.get("ISPOSTGRES", 0))
+assert SECRET_KEY
 
 ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
 
@@ -85,15 +88,24 @@ WSGI_APPLICATION = "auth_project.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+if ISPOSTGRES:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("POSTGRES_DB"),
+            "USER": os.environ.get("POSTGRES_USER"),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "HOST": os.environ.get("HOST"),
+            "PORT": int(os.environ.get("PORT")),
+        }
     }
-}
-
-
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -129,6 +141,13 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+if not DEBUG:
+    STATIC_ROOT = os.environ.get("STATIC_PATH")
+
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 logging.basicConfig(
@@ -148,30 +167,19 @@ SWAGGER_SETTINGS = {
             "in": "header",
             "scheme": "apiKey",
         },
-        # "bearerAuth": {
-        #     "type": "http",
-        #     "scheme": "bearer",
-        #     "bearerFormat": "JWT",
-        # },
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        },
     },
     "SECURITY": [
-        {"bearerAuth": ["read", "write"], "apiKey": ["read", "write"]}
+        {
+            "bearerAuth": ["read", "write"],
+            "apiKey": ["read", "write"],
+            "Bearer": [],
+        }
     ],
-    # "SUPPORTED_SUBMIT_METHODS": ["get", "post", "put", "delete", "patch"],
     "REFETCH_SCHEMA_ON_LOGOUT": True,
     "USE_SESSION_AUTH": False,
-    # 'DEFAULT_FIELD_INSPECTORS': [
-    #     'drf_yasg.inspectors.CamelCaseJSONFilter',
-    #     'drf_yasg.inspectors.ReferencingSerializerInspector',
-    #     'drf_yasg.inspectors.RelatedFieldInspector',
-    #     'drf_yasg.inspectors.ChoiceFieldInspector',
-    #     'drf_yasg.inspectors.FileFieldInspector',
-    #     'drf_yasg.inspectors.DictFieldInspector',
-    #     'drf_yasg.inspectors.JSONFieldInspector',
-    #     'drf_yasg.inspectors.SerializerMethodFieldInspector',
-    #     'drf_yasg.inspectors.SimpleFieldInspector',
-    # ],
-    # 'DEFAULT_FILTER_INSPECTORS': [
-    #     'drf_yasg.inspectors.CoreAPICompatInspector',
-    # ],
 }

@@ -23,9 +23,16 @@ class RoleAdmin(admin.ModelAdmin):
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("id", "username", "role", "is_active", "created_at")
+    list_display = (
+        "id",
+        "username",
+        "role",
+        "is_active",
+        "created_at",
+        "email",
+    )
     list_filter = ("role", "is_active")
-    search_fields = ("username",)
+    search_fields = ("username", "email")
 
 
 admin.site.register(Author, AuthorAdmin)

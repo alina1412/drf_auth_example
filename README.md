@@ -4,6 +4,9 @@ educational
 
 Пример учебного проекта, REST API
 
+По заданию реализация авторизации не должна быть основана на встроенной возможности фреймворка, а организована своя.
+Для аутентификации использую выдачу JWT-токенов.
+
 1. API имеют ограничение доступа. 
 
 Каждый пользователь может быть одной из ролей: admin, manager, basic, guest (последний - не требует авторизации, но имеет меньше всего доступа).
@@ -41,7 +44,7 @@ uv add django djangorestframework
 django-admin startproject myproject
 python manage.py startapp api
 
-Не называть app именем app!
+Не называть app именем app! # for myself
 
 делать runserver из внутренней папки
 
@@ -54,7 +57,10 @@ INSTALLED_APPS = [
 
 python manage.py makemigrations
 python manage.py migrate
-```
+
+python manage.py migrate api zero # reverse
+``
+
 
 ```
 example of a request 

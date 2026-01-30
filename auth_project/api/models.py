@@ -27,6 +27,7 @@ class Role(models.Model):
 class User(models.Model):
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=250)
+    email = models.EmailField(max_length=25, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     role = models.ForeignKey(
         Role,
