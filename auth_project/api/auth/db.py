@@ -20,7 +20,11 @@ class UserAccessDb:
 
         role = UserRole.GUEST.value if not user.role else user.role.name
         return UserDataDto(
-            user.username, user.password, UserRole(role), user.is_active
+            user.username,
+            user.password,
+            UserRole(role),
+            user.is_active,
+            id=user.id,
         )
 
 

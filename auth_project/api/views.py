@@ -1,6 +1,3 @@
-import asyncio
-import json
-
 from auth_project.settings import logger
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
@@ -17,7 +14,7 @@ from api.auth.exceptions import (
     CredentialsException403,
     CredentialsExceptionResponse,
 )
-from api.auth.schemas import UserDataDto, UserRole
+from api.auth.schemas import UserRole
 from api.auth.serializers import LoginSerializer, UserRoleEditSerializer
 from api.auth.token_manager import TokenManager
 
@@ -25,7 +22,7 @@ from .models import Recipe, User
 from .serializers import (
     RecipeCategorySerializer,
     RecipeSerializer,
-    UserSerializer,
+    UserLimitedSerializer,
 )
 
 
@@ -105,7 +102,9 @@ class TokenGenView(APIView):
     )
     @auth_by_creds()
     def post(self, request):
-        token = TokenManager().generate_token(request)
+        version = TokenManager().mark_token_version(request)
+        token = TokenManager().generate_token(request, version)
+
         return Response(
             {"token": token, "token_type": "bearer"}, status=status.HTTP_200_OK
         )
@@ -139,7 +138,7 @@ class RegistrationView(APIView):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    serializer_class = UserSerializer
+    serializer_class = UserLimitedSerializer
     queryset = User.objects.all().order_by("id")
     lookup_field = "pk"
 
@@ -159,12 +158,6 @@ class UserViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         """Shows list of users"""
         return super().list(request, *args, **kwargs)
-
-    # POST
-    @require_auth_role(UserRole.ADMIN)
-    def create(self, request, *args, **kwargs):
-        """Creates a user"""
-        return super().create(request, *args, **kwargs)
 
     @require_auth_role(UserRole.BASIC)
     def update(self, request, *args, **kwargs):
@@ -208,6 +201,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if not request.user_data.username == user.username:
             raise CredentialsException403()
 
+        request.user_data.id = user.id
         return user
 
     # DELETE -> set is_active=False
@@ -222,6 +216,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        TokenManager().mark_token_version(request)
         user.is_active = False
         user.save()
         request.user_data.role = UserRole.GUEST

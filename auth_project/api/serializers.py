@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from rest_framework import serializers
 
 from .models import Category, Recipe, User
@@ -35,3 +36,24 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+
+
+class UserLimitedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "role", "created_at", "is_active"]
+
+    def validate(self, data):
+        if hasattr(self, "initial_data"):
+            unknown_keys = set(self.initial_data.keys()) - set(
+                self.fields.keys()
+            )
+
+            if "password" in unknown_keys:
+                raise ValidationError("You can't change a password")
+
+            if unknown_keys:
+                raise ValidationError(
+                    "Got unknown fields: {}".format(unknown_keys)
+                )
+        return data

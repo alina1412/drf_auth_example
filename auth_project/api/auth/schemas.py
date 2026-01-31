@@ -5,9 +5,11 @@ from enum import Enum
 
 @dataclass
 class TokenDataDto:
+    id: int
     username: str
     expire: datetime
     role: str
+    version: int
 
 
 @dataclass
@@ -55,3 +57,4 @@ class UserDataDto:
     password: str
     role: UserRole | None = None
     is_active: bool | None = None
+    id: int | None = None

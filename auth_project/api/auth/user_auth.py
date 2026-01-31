@@ -29,6 +29,7 @@ class UserAuthorization:
     def verify_user(user: UserDataDto, password: str) -> bool:
         if not user:
             return False
+
         if not user.is_active or not EncodingPassword.verify_password(
             user.password, password
         ):
@@ -41,14 +42,15 @@ class UserAuthorization:
             username=body.get("username", ""),
             password=body.get("password", ""),
             role=UserRole.GUEST,
+            id=None,
         )
         return user_data
 
     def auth_user(self, request) -> None:
-        """Если пользователь не верифицирован,
+        """Логин по паролю. Если пользователь не верифицирован,
         ошибка 401"""
         try:
-            body = json.loads(request.body)
+            body = request.data
             assert "username" in body and "password" in body
         except (json.JSONDecodeError, AssertionError):
             logger.info("Invalid JSON in request body")

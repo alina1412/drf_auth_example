@@ -1,6 +1,17 @@
 {
     "configurations": [
         {
+            "name": "Pytest",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": [
+                // ".",
+                "./api/tests/test_recipes_views.py::test_delete_recipe_view_success"
+            ],
+            "cwd": "${workspaceFolder}/auth_project"
+        },
+        {
             "name": "Python Debugger: Django",
             "type": "debugpy",
             "request": "launch",

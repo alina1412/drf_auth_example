@@ -21,4 +21,5 @@
         "--log-level=ERROR"
         // "test_*.py",        
     ]
+    // "python-envs.pythonProjects": []
 }

@@ -140,6 +140,26 @@ def test_delete_own_profile_view_success(auth_token, example_basic_role_user):
 
 
 @pytest.mark.django_db
+def test_login_profile_view_fail(auth_token, example_basic_role_user):
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"bearer {auth_token}",
+    }
+
+    client = APIClient()
+    response = client.post(
+        "/api/token/gen",
+        data={
+            "username": example_basic_role_user["username"],
+            "password": "dvawrkevjnaefvnroaenrvaesfnvaensfvo",
+        },
+        format="json",
+        **headers,
+    )
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
 def test_delete_other_user_view_forbidden(auth_token):
     role = Role.objects.create(name=UserRole.BASIC)
     new_user = User.objects.create(
@@ -199,7 +219,6 @@ def test_update_other_user_view_success(admin_auth_token):
         url,
         data={
             "username": "test2",
-            "password": "string",
             "is_active": True,
             "role": 3,
         },
@@ -208,6 +227,33 @@ def test_update_other_user_view_success(admin_auth_token):
     )
 
     assert resp.status_code == 200
+
+
+@pytest.mark.django_db
+def test_update_other_user_view_fail(admin_auth_token):
+    role = Role.objects.create(name=UserRole.BASIC)
+    new_user = User.objects.create(
+        username="to update", password="author", role=role
+    )
+    url = reverse("profile-detail", args=[new_user.id])
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"bearer {admin_auth_token}",
+    }
+    client = APIClient()
+    resp = client.put(
+        url,
+        data={
+            "username": "test2",
+            "password": "string",  # don't change
+            "is_active": True,
+            "role": 3,
+        },
+        format="json",
+        headers=headers,
+    )
+
+    assert resp.status_code == 400
 
 
 @pytest.mark.django_db
@@ -224,15 +270,14 @@ def test_update_own_user_view_success(auth_token, example_basic_role_user):
         url,
         data={
             "username": "test2",
-            "password": "string",
             "is_active": True,
         },
         format="json",
         headers=headers,
     )
+    assert resp.status_code == 200
     updated = User.objects.get(id=user.id)
     assert updated.username == "test2"
-    assert resp.status_code == 200
 
 
 @pytest.mark.django_db
@@ -252,17 +297,16 @@ def test_update_own_user_view_except_for_role(
         url,
         data={
             "username": "test2",
-            "password": "string",
             "is_active": True,
             "role": 4,  # don't allow to change
         },
         format="json",
         headers=headers,
     )
+    assert resp.status_code == 200
     user_after = User.objects.get(id=user.id)
     assert user_after.role == role_before
     assert user_after.username == "test2"
-    assert resp.status_code == 200
 
 
 @pytest.mark.django_db
@@ -360,8 +404,6 @@ def test_profile_list_view_sussess(admin_auth_token):
 
     resp = client.get(
         url,
-        # data={"id": last_id + 1, "role_id": 4},
-        # format="json",
         headers=headers,
     )
     assert resp.status_code == 200
@@ -387,4 +429,4 @@ def test_profile_add_view_success(admin_auth_token):
         format="json",
         headers=headers,
     )
-    assert resp.status_code == 201
+    assert resp.status_code == 405

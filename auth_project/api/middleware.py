@@ -13,7 +13,7 @@ class GuestUserMiddleware:
         logger.debug("GuestUserMiddleware before request")
 
         request.user_data = UserDataDto(
-            username="", password="", role=UserRole.GUEST
+            username="", password="", role=UserRole.GUEST, id=None
         )
         response = self.get_response(request)
         # Some logic after...

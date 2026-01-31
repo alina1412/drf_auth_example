@@ -18,7 +18,7 @@ urlpatterns = router.urls + [
     path("register", RegistrationView.as_view(), name="register"),
     path(
         "profile/",
-        UserViewSet.as_view({"get": "list", "post": "create"}),
+        UserViewSet.as_view({"get": "list"}),
         name="profile-list",
     ),
     path(

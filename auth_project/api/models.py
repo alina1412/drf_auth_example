@@ -45,3 +45,8 @@ class User(models.Model):
     class Meta:
         db_table = "user"
         verbose_name = "Api_User"
+
+
+class Token(models.Model):
+    user_id = models.BigIntegerField()
+    version = models.BigIntegerField()
