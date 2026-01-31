@@ -10,7 +10,7 @@ class GuestUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        logger.debug("AsyncMiddleware0 before request")
+        logger.debug("GuestUserMiddleware before request")
 
         request.user_data = UserDataDto(
             username="", password="", role=UserRole.GUEST

@@ -1,34 +1,34 @@
 from rest_framework import serializers
 
-from .models import Author, Book, User
+from .models import Category, Recipe, User
 
 
-class BookSerializer(serializers.ModelSerializer):
+class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Book
+        model = Recipe
         fields = "__all__"
 
 
-class AuthorSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Author
+        model = Category
         fields = ["id", "name"]
 
 
-class BookAuthorSerializer(serializers.ModelSerializer):
-    author = AuthorSerializer()
+class RecipeCategorySerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
 
     class Meta:
-        model = Book
+        model = Recipe
         fields = "__all__"
 
     def create(self, validated_data):
-        author_data = validated_data.pop("author")
+        new_data = validated_data.pop("category")
 
-        author, created = Author.objects.get_or_create(**author_data)
-        book = Book.objects.create(author=author, **validated_data)
+        new_category, created = Category.objects.get_or_create(**new_data)
+        recipe = Recipe.objects.create(category=new_category, **validated_data)
 
-        return book
+        return recipe
 
 
 class UserSerializer(serializers.ModelSerializer):

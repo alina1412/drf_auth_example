@@ -2,8 +2,8 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
-    BookAuthorViewSet,
-    BookViewSet,
+    RecipeCategoryViewSet,
+    RecipeViewSet,
     RegistrationView,
     TokenGenView,
     UsersRoleEditView,
@@ -35,13 +35,13 @@ urlpatterns = router.urls + [
     ),
     path("edit-role", UsersRoleEditView.as_view(), name="edit-role"),
     path(
-        "books/",
-        BookViewSet.as_view({"get": "list", "post": "create"}),
-        name="book-list",
+        "recipes/",
+        RecipeViewSet.as_view({"get": "list", "post": "create"}),
+        name="recipe-list",
     ),
     path(
-        "books/<int:pk>/",
-        BookViewSet.as_view(
+        "recipes/<int:pk>/",
+        RecipeViewSet.as_view(
             {
                 "get": "retrieve",
                 "put": "update",
@@ -49,16 +49,16 @@ urlpatterns = router.urls + [
                 "delete": "destroy",
             }
         ),
-        name="book-detail",
+        name="recipe-detail",
     ),
     path(
-        "books-author/",
-        BookAuthorViewSet.as_view({"get": "list", "post": "create"}),
-        name="bookauthor-list",
+        "recipes-category/",
+        RecipeCategoryViewSet.as_view({"get": "list", "post": "create"}),
+        name="recipe-category-list",
     ),
     path(
-        "books-author/<int:pk>/",
-        BookAuthorViewSet.as_view(
+        "recipes-category/<int:pk>/",
+        RecipeCategoryViewSet.as_view(
             {
                 "get": "retrieve",
                 "put": "update",
@@ -66,6 +66,6 @@ urlpatterns = router.urls + [
                 "delete": "destroy",
             }
         ),
-        name="bookauthor-detail",
+        name="recipe-category-detail",
     ),
 ]

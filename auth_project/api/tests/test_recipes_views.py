@@ -6,24 +6,24 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from api.auth.token_manager import TokenManager
-from api.models import Author, Book
+from api.models import Category, Recipe
 
 
 @pytest.mark.django_db
-def test_list_books_view_success(auth_token):
-    url = reverse("book-list")  # URL: /api/books/
+def test_list_recipes_view_success(auth_token):
+    url = reverse("recipe-list")  # URL: /api/recipes/
     headers = {
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",
     }
     client = APIClient()
 
-    author = Author.objects.create(name="Author A")
-    Book.objects.create(
-        title="Book 1", author=author, publish_date="2020-01-01"
+    category = Category.objects.create(name="Category A")
+    Recipe.objects.create(
+        title="recipe 1", category=category, publish_date="2020-01-01"
     )
-    Book.objects.create(
-        title="Book 2", author=author, publish_date="2021-01-01"
+    Recipe.objects.create(
+        title="recipe 2", category=category, publish_date="2021-01-01"
     )
 
     resp = client.get(url, headers=headers)
@@ -37,12 +37,12 @@ def test_list_books_view_success(auth_token):
     assert isinstance(data, list)
     assert len(data) == 2
     titles = {item["title"] for item in data}
-    assert titles == {"Book 1", "Book 2"}
+    assert titles == {"recipe 1", "recipe 2"}
 
 
 @pytest.mark.django_db
-def test_create_book_view_success(auth_token):
-    url = reverse("book-list")  # URL: /api/books/
+def test_create_recipe_view_success(auth_token):
+    url = reverse("recipe-list")  # URL: /api/recipes/
     headers = {
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",
@@ -51,16 +51,17 @@ def test_create_book_view_success(auth_token):
 
     client = APIClient()
 
-    author = Author.objects.create(name="Author A")
+    category = Category.objects.create(name="Category A")
 
-    book_data = {
-        "title": "Test Book Title",
-        "author": author.id,
+    recipe_data = {
+        "title": "Test recipe Title",
+        "category": category.id,
         "publish_date": "2020-01-01",
+        "description": "lalalalala",
     }
     response = client.post(
         url,
-        data=json.dumps(book_data),
+        data=json.dumps(recipe_data),
         content_type="application/json",
         headers=headers,
     )
@@ -69,24 +70,24 @@ def test_create_book_view_success(auth_token):
 
 
 @pytest.mark.django_db
-def test_create_book_view_failure():
-    url = reverse("book-list")  # URL: /api/books/
+def test_create_recipe_view_failure():
+    url = reverse("recipe-list")  # URL: /api/recipes/
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
     }
     client = APIClient()
 
-    author = Author.objects.create(name="Author A")
+    category = Category.objects.create(name="Category A")
 
-    book_data = {
-        "title": "Test Book Title",
-        "author": author.id,
+    recipe_data = {
+        "title": "Test recipe Title",
+        "category": category.id,
         "publish_date": "2020-01-01",
     }
     response = client.post(
         url,
-        data=json.dumps(book_data),
+        data=json.dumps(recipe_data),
         content_type="application/json",
         headers=headers,
     )
@@ -95,8 +96,8 @@ def test_create_book_view_failure():
 
 
 @pytest.mark.skip(reason="пусть будет доступен")
-def test_list_books_view_unauthorized():
-    url = reverse("book-list")  # URL: /api/books/
+def test_list_recipes_view_unauthorized():
+    url = reverse("recipe-list")  # URL: /api/recipes/
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
@@ -108,8 +109,8 @@ def test_list_books_view_unauthorized():
 
 
 @pytest.mark.django_db
-def test_get_book_view_unauthorized():
-    url = reverse("book-detail", args=[1])
+def test_get_recipe_view_unauthorized():
+    url = reverse("recipe-detail", args=[1])
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
@@ -121,8 +122,8 @@ def test_get_book_view_unauthorized():
 
 
 @pytest.mark.django_db
-def test_update_book_view_unauthorized():
-    url = reverse("book-detail", args=[1])
+def test_update_recipe_view_unauthorized():
+    url = reverse("recipe-detail", args=[1])
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
@@ -134,8 +135,8 @@ def test_update_book_view_unauthorized():
 
 
 @pytest.mark.django_db
-def test_partial_update_book_view_unauthorized():
-    url = reverse("book-detail", args=[1])
+def test_partial_update_recipe_view_unauthorized():
+    url = reverse("recipe-detail", args=[1])
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
@@ -147,8 +148,8 @@ def test_partial_update_book_view_unauthorized():
 
 
 @pytest.mark.django_db
-def test_delete_book_view_unauthorized():
-    url = reverse("book-detail", args=[1])
+def test_delete_recipe_view_unauthorized():
+    url = reverse("recipe-detail", args=[1])
     headers = {
         "accept": "application/json",
         "Authorization": "bearer xxx",
@@ -160,13 +161,13 @@ def test_delete_book_view_unauthorized():
 
 
 @pytest.mark.django_db
-def test_get_book_view(auth_token):
-    author = Author.objects.create(name="Author B")
-    book = Book.objects.create(
-        title="The Book", author=author, publish_date="2022-05-05"
+def test_get_recipe_view(auth_token):
+    category = Category.objects.create(name="Category B")
+    recipe = Recipe.objects.create(
+        title="The recipe", category=category, publish_date="2022-05-05"
     )
 
-    url = reverse("book-detail", args=[book.pk])  #  /api/books/1/
+    url = reverse("recipe-detail", args=[recipe.pk])  #  /api/recipes/1/
     client = APIClient()
     headers = {
         "accept": "application/json",
@@ -176,29 +177,31 @@ def test_get_book_view(auth_token):
 
     assert resp.status_code == 200
     data = resp.json()
-    assert data["id"] == book.pk
-    assert data["title"] == "The Book"
-    assert data["author"] == author.pk
+    assert data["id"] == recipe.pk
+    assert data["title"] == "The recipe"
+    assert data["category"] == category.pk
+    assert data["description"] == recipe.description
 
 
 @pytest.mark.django_db
-def test_update_book_view_success(auth_token):
+def test_update_recipe_view_success(auth_token):
     headers = {
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
-    author = Author.objects.create(name="Author A")
-    book = Book.objects.create(
-        title="Original Book", author=author, publish_date="2020-01-01"
+    category = Category.objects.create(name="Category A")
+    recipe = Recipe.objects.create(
+        title="Original recipe", category=category, publish_date="2020-01-01"
     )
 
-    url = reverse("book-detail", args=[book.id])
+    url = reverse("recipe-detail", args=[recipe.id])
     update_data = {
-        "title": "Updated Book Title",
-        "author": author.id,
+        "title": "Updated recipe Title",
+        "category": category.id,
         "publish_date": "2021-01-01",
+        "description": "lalalalala",
     }
 
     response = client.put(
@@ -212,13 +215,13 @@ def test_update_book_view_success(auth_token):
 
 
 @pytest.mark.django_db
-def test_partial_update_book_view_success(auth_token):
-    author = Author.objects.create(name="Author A")
-    book = Book.objects.create(
-        title="Original Book", author=author, publish_date="2020-01-01"
+def test_partial_update_recipe_view_success(auth_token):
+    category = Category.objects.create(name="Category A")
+    recipe = Recipe.objects.create(
+        title="Original recipe", category=category, publish_date="2020-01-01"
     )
 
-    url = reverse("book-detail", args=[book.id])
+    url = reverse("recipe-detail", args=[recipe.id])
     headers = {
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",
@@ -226,7 +229,7 @@ def test_partial_update_book_view_success(auth_token):
 
     client = APIClient()
     patch_data = {
-        "title": "Partially Updated Book",
+        "title": "Partially Updated recipe",
     }
 
     response = client.patch(
@@ -240,13 +243,13 @@ def test_partial_update_book_view_success(auth_token):
 
 
 @pytest.mark.django_db
-def test_delete_book_view_success(auth_token):
-    author = Author.objects.create(name="Author A")
-    book = Book.objects.create(
-        title="Book to Delete", author=author, publish_date="2020-01-01"
+def test_delete_recipe_view_success(auth_token):
+    category = Category.objects.create(name="Category A")
+    recipe = Recipe.objects.create(
+        title="recipe to Delete", category=category, publish_date="2020-01-01"
     )
 
-    url = reverse("book-detail", args=[book.id])
+    url = reverse("recipe-detail", args=[recipe.id])
     headers = {
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",
@@ -256,19 +259,19 @@ def test_delete_book_view_success(auth_token):
     response = client.delete(url, headers=headers)
 
     assert response.status_code == 204
-    assert not Book.objects.filter(id=book.id).exists()
+    assert not Recipe.objects.filter(id=recipe.id).exists()
 
 
 @pytest.mark.django_db
-def test_update_book_view_not_found(auth_token):
-    url = reverse("book-detail", args=[999])
+def test_update_recipe_view_not_found(auth_token):
+    url = reverse("recipe-detail", args=[999])
     headers = {
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",
     }
 
     client = APIClient()
-    update_data = {"title": "Non-existent Book"}
+    update_data = {"title": "Non-existent recipe"}
 
     response = client.put(
         url,
@@ -281,8 +284,8 @@ def test_update_book_view_not_found(auth_token):
 
 
 @pytest.mark.django_db
-def test_delete_book_view_not_found(auth_token):
-    url = reverse("book-detail", args=[999])
+def test_delete_recipe_view_not_found(auth_token):
+    url = reverse("recipe-detail", args=[999])
     headers = {
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",

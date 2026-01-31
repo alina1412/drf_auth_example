@@ -21,15 +21,19 @@ from api.auth.schemas import UserDataDto, UserRole
 from api.auth.serializers import LoginSerializer, UserRoleEditSerializer
 from api.auth.token_manager import TokenManager
 
-from .models import Book, User
-from .serializers import BookAuthorSerializer, BookSerializer, UserSerializer
+from .models import Recipe, User
+from .serializers import (
+    RecipeCategorySerializer,
+    RecipeSerializer,
+    UserSerializer,
+)
 
 
-class BookViewSet(viewsets.ModelViewSet):
-    """Shows books"""
+class RecipeViewSet(viewsets.ModelViewSet):
+    """Shows recipes"""
 
-    serializer_class = BookSerializer
-    queryset = Book.objects.all().order_by("id")
+    serializer_class = RecipeSerializer
+    queryset = Recipe.objects.all().order_by("id")
     lookup_field = "pk"
 
     def get_queryset(self):
@@ -44,15 +48,15 @@ class BookViewSet(viewsets.ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     # GET
-    # Разрешить просмотр списка книг без авторизации
+    # Разрешить просмотр списка без авторизации
     def list(self, request, *args, **kwargs):
-        """Shows list of books"""
+        """Shows list of recipes"""
         return super().list(request, *args, **kwargs)
 
     # POST
     @require_auth_role(UserRole.BASIC)
     def create(self, request, *args, **kwargs):
-        """Creates a book"""
+        """Creates a recipe"""
         return super().create(request, *args, **kwargs)
 
     @require_auth_role(UserRole.BASIC)
@@ -62,27 +66,27 @@ class BookViewSet(viewsets.ModelViewSet):
     # PATCH partial update
     @require_auth_role(UserRole.BASIC)
     def partial_update(self, request, *args, **kwargs):
-        """Updates a book's data partially"""
+        """Updates a recipe's data partially"""
         return super().partial_update(request, *args, **kwargs)
 
-    # DELETE book
+    # DELETE
     @require_auth_role(UserRole.BASIC)
     def destroy(self, request, *args, **kwargs):
-        """Deletes a book"""
+        """Deletes a recipe"""
         return super().destroy(request, *args, **kwargs)
 
 
-class BookAuthorViewSet(viewsets.ModelViewSet):
+class RecipeCategoryViewSet(viewsets.ModelViewSet):
     """
-    ViewSet for books with full author details
+    ViewSet for recipe with full category details
     """
 
-    serializer_class = BookAuthorSerializer
-    queryset = Book.objects.all().select_related("author").order_by("id")
+    serializer_class = RecipeCategorySerializer
+    queryset = Recipe.objects.all().select_related("category").order_by("id")
 
     @require_auth_role(UserRole.GUEST)
     def list(self, request, *args, **kwargs):
-        """Shows list of books with their authors"""
+        """Shows list of recipe with their categories"""
         return super().list(request, *args, **kwargs)
 
     # POST

@@ -1,15 +1,15 @@
 from django.contrib import admin
 
-from .models import Author, Book, Role, User
+from .models import Category, Recipe, Role, User
 
 
-class AuthorAdmin(admin.ModelAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "name")
     list_filter = ("id", "name")
     search_fields = ("name",)
 
 
-class BookAdmin(admin.ModelAdmin):
+class RecipeAdmin(admin.ModelAdmin):
     def get_list_display(self, request):
         return [field.name for field in self.model._meta.concrete_fields]
 
@@ -35,7 +35,7 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ("username", "email")
 
 
-admin.site.register(Author, AuthorAdmin)
-admin.site.register(Book, BookAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(User, UserAdmin)
