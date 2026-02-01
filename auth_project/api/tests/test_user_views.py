@@ -18,8 +18,17 @@ def test_registration_success():
     response = client.post(
         url, data=json.dumps(user_data), content_type="application/json"
     )
-
     assert response.status_code == 201
+
+    response = client.post(
+        "/api/token/gen",
+        data={
+            "username": "testuser",
+            "password": "testpass123",
+        },
+        format="json",
+    )
+    assert response.status_code == 200
 
 
 @pytest.mark.django_db

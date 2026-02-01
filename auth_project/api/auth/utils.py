@@ -13,4 +13,4 @@ class EncodingPassword:
         password_hash = bcrypt.hashpw(
             raw_password.encode("utf-8"), bcrypt.gensalt()
         )
-        return password_hash
+        return password_hash.decode("utf8")

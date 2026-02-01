@@ -98,7 +98,12 @@ class TokenGenView(APIView):
     """
 
     @swagger_auto_schema(
-        request_body=LoginSerializer, responses={200: "Token response"}
+        request_body=LoginSerializer,
+        responses={
+            200: "Token response",
+            401: "Unauthorized",
+            422: "Bad Request",
+        },
     )
     @auth_by_creds()
     def post(self, request):
@@ -112,7 +117,8 @@ class TokenGenView(APIView):
 
 class RegistrationView(APIView):
     @swagger_auto_schema(
-        request_body=LoginSerializer, responses={201: "User registered"}
+        request_body=LoginSerializer,
+        responses={201: "User registered", 400: "User registration failed"},
     )
     def post(self, request):
         """Registers a new user (profile)"""
