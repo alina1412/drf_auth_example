@@ -32,11 +32,9 @@ educational
 10. Logout анулирует токен - нужно логиниться заново.
 
 
-<img width="1619" height="843" alt="image" src="https://github.com/user-attachments/assets/ab45ebeb-7d29-434e-a189-ba20b3bc6ff5" />
+<img width="1619"  alt="image" src="https://github.com/user-attachments/assets/df73d481-7a6e-491a-ad7a-9546463c9adc" />
 
-<img width="1619" height="920" alt="image" src="https://github.com/user-attachments/assets/d66854ab-2860-4191-8de0-f8c455d5e769" />
-
-
+<img width="1205" height="378" alt="image" src="https://github.com/user-attachments/assets/07ca878f-b013-4bea-882c-cc0f1efe7dbc" />
 
 ## Notes
 ```
