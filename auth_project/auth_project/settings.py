@@ -27,8 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
-DEBUG = bool(os.environ.get("DEBUG", 0))
-ISPOSTGRES = bool(os.environ.get("ISPOSTGRES", 0))
+DEBUG = int(os.environ.get("DEBUG", 0))
+ISPOSTGRES = int(os.environ.get("ISPOSTGRES", 0))
 assert SECRET_KEY
 
 ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
