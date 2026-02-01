@@ -73,6 +73,7 @@ class UserAuthorization:
                 detail="Token validation error"
             ) from exc
         request.user_data.username = token_info.claims.username
+        request.user_data.id = token_info.claims.id
         request.user_data.role = UserRole(token_info.claims.role)
 
     def validate_bearer_type(self, request) -> bool:

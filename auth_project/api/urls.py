@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .views import (
+    LogoutView,
     RecipeCategoryViewSet,
     RecipeViewSet,
     RegistrationView,
@@ -16,6 +17,7 @@ router = DefaultRouter()
 urlpatterns = router.urls + [
     path("token/gen", TokenGenView.as_view(), name="token-gen"),
     path("register", RegistrationView.as_view(), name="register"),
+    path("logout", LogoutView.as_view(), name="logout"),
     path(
         "profile/",
         UserViewSet.as_view({"get": "list"}),

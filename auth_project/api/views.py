@@ -143,6 +143,21 @@ class RegistrationView(APIView):
         )
 
 
+class LogoutView(APIView):
+    @swagger_auto_schema(
+        responses={200: "success"},
+    )
+    @require_auth_role(UserRole.BASIC)
+    def post(self, request):
+        """Logs out a user"""
+        TokenManager().mark_token_version(request.user_data.id)
+
+        return Response(
+            {"message": "User logged out successfully"},
+            status=status.HTTP_200_OK,
+        )
+
+
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserLimitedSerializer
     queryset = User.objects.all().order_by("id")

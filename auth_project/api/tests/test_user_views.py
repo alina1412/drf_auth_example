@@ -142,7 +142,7 @@ def test_delete_own_profile_view_success(auth_token, example_basic_role_user):
             "password": example_basic_role_user["password"],
         },
         format="json",
-        **headers,
+        headers=headers,
     )
     assert response.status_code == 401
 
@@ -162,7 +162,29 @@ def test_login_profile_view_fail(auth_token, example_basic_role_user):
             "password": "dvawrkevjnaefvnroaenrvaesfnvaensfvo",
         },
         format="json",
-        **headers,
+        headers=headers,
+    )
+    assert response.status_code == 401
+
+
+@pytest.mark.django_db
+def test_logout_view_success(auth_token, example_basic_role_user):
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"bearer {auth_token}",
+    }
+
+    client = APIClient()
+    response = client.post(
+        "/api/logout",
+        headers=headers,
+    )
+    assert response.status_code == 200
+
+    # second time
+    response = client.post(
+        "/api/logout",
+        headers=headers,
     )
     assert response.status_code == 401
 
@@ -220,7 +242,7 @@ def test_delete_other_profile_view_success(
             "password": "123",
         },
         format="json",
-        **headers,
+        headers=headers,
     )
     assert response.status_code == 401
 
