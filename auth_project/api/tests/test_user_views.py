@@ -5,7 +5,6 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from api.auth.schemas import UserRole
-from api.auth.token_manager import TokenManager
 from api.models import Role, User
 
 
@@ -110,7 +109,7 @@ def test_delete_own_profile_view_success(auth_token, example_basic_role_user):
 
     assert response.status_code == 200
     result_user = User.objects.filter(id=profile.id).first()
-    assert result_user.is_active == False
+    assert result_user.is_active is False
 
     url = reverse("profile-detail", args=[profile.id])
     headers = {
@@ -174,6 +173,47 @@ def test_delete_other_user_view_forbidden(auth_token):
     resp = client.delete(url, headers=headers)
 
     assert resp.status_code == 403
+
+
+@pytest.mark.django_db
+def test_delete_other_profile_view_success(
+    admin_auth_token, example_admin_role_user
+):
+    target_user = {
+        "username": "to Delete",
+        "password": "$2b$12$QfU0BwNI.dJWJ/hEofl/SubOdQYVJ9SLr6qxbZQWiAuNe4yOZiXnS",
+        "is_active": True,
+    }
+    user_basic = User.objects.create(**target_user)
+
+    profile_admin = User.objects.get(username=example_admin_role_user.username)
+
+    url = reverse("profile-detail", args=[user_basic.id])
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"bearer {admin_auth_token}",
+    }
+
+    client = APIClient()
+    response = client.delete(url, headers=headers)
+    assert response.status_code == 200
+
+    result_user = User.objects.filter(id=user_basic.id).first()
+    assert result_user.is_active is False
+
+    result_user = User.objects.filter(id=profile_admin.id).first()
+    assert result_user.is_active is True
+
+    response = client.post(
+        "/api/token/gen",
+        data={
+            "username": target_user["username"],
+            "password": "123",
+        },
+        format="json",
+        **headers,
+    )
+    assert response.status_code == 401
 
 
 @pytest.mark.django_db

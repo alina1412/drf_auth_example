@@ -5,7 +5,6 @@ import pytz
 from auth_project.settings import logger
 from jose import JWTError, jwt
 
-from api.auth.db import UserAccessDb
 from api.auth.exceptions import CredentialsException
 from api.auth.schemas import TokenCheckedDataDto, TokenDataDto, UserDataDto
 from api.models import Token
@@ -32,11 +31,11 @@ class TokenManager:
         }
         return data_to_encode
 
-    def mark_token_version(self, request):
+    def mark_token_version(self, user_id: int):
         from django.db.models import F
 
         token_obj, created = Token.objects.get_or_create(
-            user_id=request.user_data.id, defaults={"version": 1}
+            user_id=user_id, defaults={"version": 1}
         )
         if not created:
             token_obj.version = F("version") + 1
@@ -89,12 +88,7 @@ class TokenManager:
 
     def check_token(self, token: str, request) -> TokenCheckedDataDto:
         decoded_token_data = self.decode_token(token)
-        # user = UserAccessDb().get_user(
-        #     {"username": decoded_token_data.username}
-        # )
-        expired_time = decoded_token_data.expire
         self.validate_token(decoded_token_data)
-        # request.user_data = user
         return TokenCheckedDataDto(
             **{
                 "token": "valid",

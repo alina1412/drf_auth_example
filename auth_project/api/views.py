@@ -102,7 +102,7 @@ class TokenGenView(APIView):
     )
     @auth_by_creds()
     def post(self, request):
-        version = TokenManager().mark_token_version(request)
+        version = TokenManager().mark_token_version(request.user_data.id)
         token = TokenManager().generate_token(request, version)
 
         return Response(
@@ -162,29 +162,37 @@ class UserViewSet(viewsets.ModelViewSet):
     @require_auth_role(UserRole.BASIC)
     def update(self, request, *args, **kwargs):
         """Updates user profile by himself or by admin, by id"""
+
         if request.user_data.role != UserRole.ADMIN:
             try:
                 user = self.get_own_profile_or_403(request)
+
                 if "role" in request.data:
                     del request.data["role"]
+
+                request.user_data.id = user.id
 
             except CredentialsException403:
                 return Response(
                     {"error": "Incorrect request."},
                     status=status.HTTP_403_FORBIDDEN,
                 )
+
         return super().update(request, *args, **kwargs)
 
     # PATCH partial update
     @require_auth_role(UserRole.BASIC)
     def partial_update(self, request, *args, **kwargs):
         """Updates user profile partiially by himself or by admin, by id"""
+
         if request.user_data.role != UserRole.ADMIN:
             try:
                 user = self.get_own_profile_or_403(request)
 
                 if "role" in request.data:
                     del request.data["role"]
+
+                request.user_data.id = user.id
 
             except CredentialsException403:
                 return Response(
@@ -201,27 +209,40 @@ class UserViewSet(viewsets.ModelViewSet):
         if not request.user_data.username == user.username:
             raise CredentialsException403()
 
-        request.user_data.id = user.id
         return user
 
     # DELETE -> set is_active=False
     @require_auth_role(UserRole.BASIC)
     def destroy(self, request, *args, **kwargs):
         """Deactivates user profile by himself or by admin, by id"""
-        try:
-            user = self.get_own_profile_or_403(request)
-        except CredentialsException403:
+
+        target_id = self.kwargs["pk"]
+
+        requester_user = UserAccessDb().get_user_obj(
+            {"username": request.user_data.username}
+        )
+
+        if (
+            target_id != requester_user.id
+            and request.user_data.role != UserRole.ADMIN
+        ):
             return Response(
                 {"error": "Incorrect request."},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        TokenManager().mark_token_version(request)
-        user.is_active = False
-        user.save()
-        request.user_data.role = UserRole.GUEST
-        request.user_data.username = "guest"
-        request.user_data.is_active = False
+        target_user = UserAccessDb().get_user_obj({"id": target_id})
+
+        if not target_user:
+            return Response(
+                {"error": "User not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        TokenManager().mark_token_version(target_user.id)
+        target_user.is_active = False
+        target_user.save()
+
         return Response(status=status.HTTP_200_OK)
 
 

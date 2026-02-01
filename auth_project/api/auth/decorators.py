@@ -3,11 +3,9 @@ from auth_project.settings import logger
 from api.auth.exceptions import (
     CredentialsException,
     CredentialsException401,
-    CredentialsException403,
     CredentialsException422,
     CredentialsExceptionResponse,
 )
-from api.auth.schemas import UserRole
 from api.auth.user_auth import UserAuthorization
 
 

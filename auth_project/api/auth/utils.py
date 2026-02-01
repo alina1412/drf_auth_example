@@ -1,5 +1,4 @@
 import bcrypt
-from auth_project.settings import logger
 
 
 class EncodingPassword:

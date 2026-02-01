@@ -13,8 +13,11 @@ class UserAccessDb:
         )
         user.save()
 
+    def get_user_obj(self, user_data: dict) -> User | None:
+        return User.objects.filter(**user_data).first()
+
     def get_user(self, user_data: dict) -> UserDataDto | None:
-        user = User.objects.filter(**user_data).first()
+        user = self.get_user_obj(user_data)
         if not user:
             return None
 

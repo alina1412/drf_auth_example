@@ -1,11 +1,9 @@
-import asyncio
 import json
 
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from api.auth.token_manager import TokenManager
 from api.models import Category, Recipe
 
 
@@ -47,7 +45,6 @@ def test_create_recipe_view_success(auth_token):
         "accept": "application/json",
         "Authorization": f"bearer {auth_token}",
     }
-    decoded_token_data = TokenManager().decode_token(auth_token)
 
     client = APIClient()
 

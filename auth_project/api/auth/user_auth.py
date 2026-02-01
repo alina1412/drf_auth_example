@@ -8,7 +8,6 @@ from .exceptions import (
     CredentialsException,
     CredentialsException401,
     CredentialsException422,
-    CredentialsExceptionResponse,
 )
 from .schemas import UserDataDto, UserRole
 from .token_manager import TokenManager

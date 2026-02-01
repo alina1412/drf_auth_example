@@ -1,10 +1,13 @@
 import json
+import logging
 
 import pytest
 from rest_framework.test import APIClient
 
 from api.auth.token_manager import TokenManager
 from api.models import Role, User
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture
@@ -50,6 +53,7 @@ def auth_token(example_basic_role_user) -> str:
     assert response.status_code == 200
     data = json.loads(response.content)
     decoded_token_data = TokenManager().decode_token(data["token"])
+    logger.debug(f"basic token data: {decoded_token_data}")
     return data["token"]
 
 
@@ -76,4 +80,5 @@ def admin_auth_token(example_admin_role_user) -> str:
     assert response.status_code == 200
     data = json.loads(response.content)
     decoded_token_data = TokenManager().decode_token(data["token"])
+    logger.debug(f"admin token data: {decoded_token_data}")
     return data["token"]
