@@ -8,6 +8,7 @@
 - ✅ Ролевая модель (admin, manager, basic, guest)
 - ✅ Декораторы для разграничения доступа
 - ✅ Тесты на pytest
+- ✅ Для настроек swagger указаны SWAGGER_SETTINGS в auth_project/settings.py
 
 ### Стек технологий:
 - Python
